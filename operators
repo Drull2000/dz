@@ -1,0 +1,99 @@
+#include <iostream>
+#include <cstring>
+
+class String {
+private:
+    char* data;
+    int length;
+
+public:
+    String(const char* str = "") {
+        length = strlen(str);
+        data = new char[length + 1];
+        strcpy(data, str);
+    }
+
+    String(const String& other) {
+        length = other.length;
+        data = new char[length + 1];
+        strcpy(data, other.data);
+    }
+
+    String(String&& other) noexcept {
+        data = other.data;
+        length = other.length;
+        other.data = nullptr;
+        other.length = 0;
+    }
+
+    String& operator=(const String& other) {
+        if (this != &other) {
+            delete[] data;
+            length = other.length;
+            data = new char[length + 1];
+            strcpy(data, other.data);
+        }
+        return *this;
+    }
+
+    String& operator=(String&& other) noexcept {
+        if (this != &other) {
+            delete[] data;
+            data = other.data;
+            length = other.length;
+            other.data = nullptr;
+            other.length = 0;
+        }
+        return *this;
+    }
+
+    ~String() {
+        delete[] data;
+    }
+
+    int getLength() const {
+        return length;
+    }
+
+    const char* c_str() const {
+        return data;
+    }
+
+    String operator+(const String& other) const {
+        int newLen = length + other.length;
+        char* newData = new char[newLen + 1];
+        strcpy(newData, data);
+        strcat(newData, other.data);
+        String result(newData);
+        delete[] newData;
+        return result;
+    }
+
+    void print() const {
+        std::cout << data;
+    }
+};
+
+int main() {
+    String s1("Hello");
+    String s2(" World");
+    String s3 = s1 + s2;
+    s3.print();
+    std::cout << "\n";
+
+    String s4 = std::move(s3);
+    s4.print();
+    std::cout << "\n";
+
+    String s5;
+    s5 = s1;
+    s5.print();
+    std::cout << "\n";
+
+    String s6;
+    s6 = std::move(s2);
+    s6.print();
+    std::cout << "\n";
+
+    return 0;
+}
