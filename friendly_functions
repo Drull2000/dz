@@ -1,0 +1,55 @@
+#include <iostream>
+#include <cstring>
+
+class String {
+private:
+    char* data;
+    int length;
+public:
+    String(const char* str = "") {
+        length = strlen(str);
+        data = new char[length + 1];
+        strcpy(data, str);
+    }
+
+    String(const String& other) {
+        length = other.length;
+        data = new char[length + 1];
+        strcpy(data, other.data);
+    }
+
+    ~String() {
+        delete[] data;
+    }
+
+    int getLength() const {
+        return length;
+    }
+
+    const char* c_str() const {
+        return data;
+    }
+
+    String operator+(const String& other) const {
+        int newLen = length + other.length;
+        char* newData = new char[newLen + 1];
+        strcpy(newData, data);
+        strcat(newData, other.data);
+        String result(newData);
+        delete[] newData;
+        return result;
+    }
+
+    void print() const {
+        std::cout << data;
+    }
+};
+
+int main() {
+    String s1("Hello");
+    String s2(" World");
+    String s3 = s1 + s2;
+    s3.print();
+    std::cout << "\nДовжина: " << s3.getLength() << std::endl;
+    return 0;
+}
