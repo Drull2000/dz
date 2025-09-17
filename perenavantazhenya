@@ -1,0 +1,38 @@
+#include <iostream>
+#include <cstring>
+
+class String {
+    char* data;
+    size_t length;
+public:
+    String(const char* str = "") {
+        length = std::strlen(str);
+        data = new char[length + 1];
+        std::strcpy(data, str);
+    }
+
+    ~String() {
+        delete[] data;
+    }
+
+    char& operator[](size_t i) {
+        return data[i];
+    }
+
+    const char& operator[](size_t i) const {
+        return data[i];
+    }
+
+    void print() const {
+        std::cout << data << std::endl;
+    }
+};
+
+int main() {
+    String s("Hello");
+    s.print();
+    s[1] = 'a';
+    s.print();
+    std::cout << s[4] << std::endl;
+    return 0;
+}
