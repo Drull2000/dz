@@ -1,0 +1,77 @@
+#include <iostream>
+#include <cstring>
+
+class String {
+    char* data;
+    size_t length;
+public:
+    String(const char* str = "") {
+        length = std::strlen(str);
+        data = new char[length + 1];
+        std::strcpy(data, str);
+    }
+
+    ~String() {
+        delete[] data;
+    }
+
+    bool empty() const {
+        return length == 0;
+    }
+
+    String substr(size_t start, size_t end) const {
+        if (start > end || end > length) return String("");
+        size_t newLen = end - start;
+        char* buf = new char[newLen + 1];
+        std::strncpy(buf, data + start, newLen);
+        buf[newLen] = '\0';
+        String res(buf);
+        delete[] buf;
+        return res;
+    }
+
+    void replace(size_t index, size_t count, const char* str) {
+        if (index > length) return;
+        size_t strLen = std::strlen(str);
+        if (index + count > length) count = length - index;
+        size_t newLen = length - count + strLen;
+        char* buf = new char[newLen + 1];
+        std::strncpy(buf, data, index);
+        std::strcpy(buf + index, str);
+        std::strcpy(buf + index + strLen, data + index + count);
+        delete[] data;
+        data = buf;
+        length = newLen;
+    }
+
+    void insert(size_t index, const char* str) {
+        if (index > length) index = length;
+        size_t strLen = std::strlen(str);
+        size_t newLen = length + strLen;
+        char* buf = new char[newLen + 1];
+        std::strncpy(buf, data, index);
+        std::strcpy(buf + index, str);
+        std::strcpy(buf + index + strLen, data + index);
+        delete[] data;
+        data = buf;
+        length = newLen;
+    }
+
+    void print() const {
+        std::cout << data << std::endl;
+    }
+};
+
+int main() {
+    String s("Hello World");
+    s.replace(6, 5, "C++");
+    s.print();               // Hello C++
+    s.insert(5, ", Amazing");
+    s.print();               // Hello, Amazing C++
+    String sub = s.substr(7, 14);
+    sub.print();             // Amazing
+    std::cout << s.empty() << std::endl;  // 0 (false)
+    String e("");
+    std::cout << e.empty() << std::endl;  // 1 (true)
+    return 0;
+}
