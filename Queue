@@ -1,0 +1,70 @@
+#include <iostream>
+using namespace std;
+
+class Queue {
+private:
+    struct Node {
+        int value;
+        Node* next;
+        Node(int v) : value(v), next(nullptr) {}
+    };
+
+    Node* frontNode;
+    Node* backNode;
+    int count;
+
+public:
+    Queue() : frontNode(nullptr), backNode(nullptr), count(0) {}
+
+    void push(int value) {
+        Node* node = new Node(value);
+        if (!backNode) frontNode = backNode = node;
+        else {
+            backNode->next = node;
+            backNode = node;
+        }
+        count++;
+    }
+
+    void pop() {
+        if (!frontNode) return;
+        Node* temp = frontNode;
+        frontNode = frontNode->next;
+        if (!frontNode) backNode = nullptr;
+        delete temp;
+        count--;
+    }
+
+    int front() const {
+        if (!frontNode) throw runtime_error("Queue is empty");
+        return frontNode->value;
+    }
+
+    bool empty() const {
+        return frontNode == nullptr;
+    }
+
+    int size() const {
+        return count;
+    }
+
+    void clear() {
+        while (!empty()) pop();
+    }
+
+    ~Queue() {
+        clear();
+    }
+};
+
+int main() {
+    Queue q;
+    q.push(5);
+    q.push(10);
+    q.push(15);
+    cout << "Front: " << q.front() << endl;
+    q.pop();
+    cout << "Front after pop: " << q.front() << endl;
+    cout << "Size: " << q.size() << endl;
+    return 0;
+}
