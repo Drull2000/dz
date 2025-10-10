@@ -1,0 +1,65 @@
+#include <iostream>
+using namespace std;
+
+// 1. Агрегація 
+class University {
+public:
+    string name;
+    University(string n) : name(n) {}
+};
+
+class Student {
+private:
+    string name;
+    University* university; 
+public:
+    Student(string n, University* u) : name(n), university(u) {}
+    void showInfo() {
+        cout << name << " навчається в " << university->name << endl;
+    }
+};
+
+// 2. Композиція
+class Engine {
+public:
+    void start() { cout << "Двигун запущено!" << endl; }
+};
+
+class Car {
+private:
+    Engine engine; 
+public:
+    void start() {
+        cout << "Машина стартує..." << endl;
+        engine.start();
+    }
+};
+
+// 3. Спадкування
+class Animal {
+public:
+    void eat() { cout << "Тварина їсть" << endl; }
+};
+
+class Dog : public Animal {
+public:
+    void bark() { cout << "Собака гавкає" << endl; }
+};
+
+int main() {
+    cout << "=== Агрегація ===" << endl;
+    University u("Київський університет");
+    Student s("Іван", &u);
+    s.showInfo();
+
+    cout << "\n=== Композиція ===" << endl;
+    Car car;
+    car.start();
+
+    cout << "\n=== Спадкування ===" << endl;
+    Dog dog;
+    dog.eat();
+    dog.bark();
+
+    return 0;
+}
