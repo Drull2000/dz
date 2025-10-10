@@ -1,0 +1,163 @@
+#include <iostream>
+using namespace std;
+
+class DoublyLinkedList {
+private:
+    struct Node {
+        int value;
+        Node* prev;
+        Node* next;
+        Node(int v) : value(v), prev(nullptr), next(nullptr) {}
+    };
+
+    Node* head;
+    Node* tail;
+    int count;
+
+public:
+    DoublyLinkedList() : head(nullptr), tail(nullptr), count(0) {}
+
+    void push_front(int value) {
+        Node* node = new Node(value);
+        if (!head) head = tail = node;
+        else {
+            node->next = head;
+            head->prev = node;
+            head = node;
+        }
+        count++;
+    }
+
+    void push_back(int value) {
+        Node* node = new Node(value);
+        if (!tail) head = tail = node;
+        else {
+            tail->next = node;
+            node->prev = tail;
+            tail = node;
+        }
+        count++;
+    }
+
+    void pop_front() {
+        if (!head) return;
+        Node* temp = head;
+        head = head->next;
+        if (head) head->prev = nullptr;
+        else tail = nullptr;
+        delete temp;
+        count--;
+    }
+
+    void pop_back() {
+        if (!tail) return;
+        Node* temp = tail;
+        tail = tail->prev;
+        if (tail) tail->next = nullptr;
+        else head = nullptr;
+        delete temp;
+        count--;
+    }
+
+    void insert(int position, int value) {
+        if (position <= 0) { push_front(value); return; }
+        if (position >= count) { push_back(value); return; }
+
+        Node* curr = head;
+        for (int i = 0; i < position; i++)
+            curr = curr->next;
+
+        Node* node = new Node(value);
+        node->prev = curr->prev;
+        node->next = curr;
+        curr->prev->next = node;
+        curr->prev = node;
+        count++;
+    }
+
+    void erase(int position) {
+        if (position < 0 || position >= count) return;
+        if (position == 0) { pop_front(); return; }
+        if (position == count - 1) { pop_back(); return; }
+
+        Node* curr = head;
+        for (int i = 0; i < position; i++)
+            curr = curr->next;
+
+        curr->prev->next = curr->next;
+        curr->next->prev = curr->prev;
+        delete curr;
+        count--;
+    }
+
+    int find(int value) {
+        Node* curr = head;
+        int index = 0;
+        while (curr) {
+            if (curr->value == value) return index;
+            curr = curr->next;
+            index++;
+        }
+        return -1;
+    }
+
+    void clear() {
+        while (head) pop_front();
+    }
+
+    int size() const { return count; }
+
+    bool empty() const { return count == 0; }
+
+    void print_forward() const {
+        Node* curr = head;
+        cout << "[";
+        while (curr) {
+            cout << curr->value;
+            if (curr->next) cout << " <-> ";
+            curr = curr->next;
+        }
+        cout << "]" << endl;
+    }
+
+    void print_backward() const {
+        Node* curr = tail;
+        cout << "[";
+        while (curr) {
+            cout << curr->value;
+            if (curr->prev) cout << " <-> ";
+            curr = curr->prev;
+        }
+        cout << "]" << endl;
+    }
+
+    ~DoublyLinkedList() {
+        clear();
+    }
+};
+
+int main() {
+    DoublyLinkedList list;
+
+    list.push_back(10);
+    list.push_front(5);
+    list.push_back(20);
+    list.insert(1, 7);
+
+    cout << "Список вперед: "; list.print_forward();
+    cout << "Список назад: "; list.print_backward();
+
+    cout << "Позиція числа 20: " << list.find(20) << endl;
+
+    list.erase(1);
+    cout << "Після видалення: "; list.print_forward();
+
+    list.pop_front();
+    list.pop_back();
+    cout << "Після pop_front і pop_back: "; list.print_forward();
+
+    cout << "Розмір: " << list.size() << ", порожній? " 
+         << (list.empty() ? "так" : "ні") << endl;
+
+    return 0;
+}
