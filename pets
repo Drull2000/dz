@@ -1,0 +1,41 @@
+#include <iostream>
+using namespace std;
+
+class Pet {
+protected:
+    string name;
+    string characteristic;
+public:
+    Pet(string n, string c) : name(n), characteristic(c) {}
+    void showInfo() {
+        cout << "Ім'я: " << name << " | Характеристика: " << characteristic << endl;
+    }
+};
+
+class Dog : public Pet {
+public:
+    Dog(string n) : Pet(n, "вірний, охороняє дім, любить бігати") {}
+};
+
+class Cat : public Pet {
+public:
+    Cat(string n) : Pet(n, "незалежна, любить спати, ловить мишей") {}
+};
+
+class Parrot : public Pet {
+public:
+    Parrot(string n) : Pet(n, "балакучий, яскравий, любить увагу") {}
+};
+
+int main() {
+    Dog dog("Бім");
+    Cat cat("Мурчик");
+    Parrot parrot("Кеша");
+
+    cout << "=== Домашні тварини ===" << endl;
+    dog.showInfo();
+    cat.showInfo();
+    parrot.showInfo();
+
+    return 0;
+}
