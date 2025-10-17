@@ -1,0 +1,89 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Базовий клас
+class Audio {
+public:
+    virtual void Play() = 0; // Віртуальний метод
+    virtual ~Audio() {}      // Віртуальний деструктор
+};
+
+// Пісня
+class Song : public Audio {
+    string title, artist;
+public:
+    Song(string t, string a) : title(t), artist(a) {}
+    void Play() override {
+        cout << "Playing song: " << title << " by " << artist << endl;
+    }
+};
+
+// Подкаст
+class Podcast : public Audio {
+    string host, topic;
+public:
+    Podcast(string h, string t) : host(h), topic(t) {}
+    void Play() override {
+        cout << "Podcast on " << topic << " hosted by " << host << endl;
+    }
+};
+
+// Аудіокнига
+class Audiobook : public Audio {
+    string bookTitle, author, voice;
+public:
+    Audiobook(string bt, string a, string v)
+        : bookTitle(bt), author(a), voice(v) {}
+    void Play() override {
+        cout << "Listening to audiobook: " << bookTitle 
+             << " by " << author << ". Read by " << voice << "." << endl;
+    }
+};
+
+// Головна програма
+int main() {
+    int choice;
+    cout << "Оберіть тип аудіо:\n1 - Пісня\n2 - Подкаст\n3 - Аудіокнига\n> ";
+    cin >> choice;
+    cin.ignore(); // очищає буфер
+
+    Audio* audio = nullptr;
+
+    if (choice == 1) {
+        string title, artist;
+        cout << "Введіть назву пісні: ";
+        getline(cin, title);
+        cout << "Введіть виконавця: ";
+        getline(cin, artist);
+        audio = new Song(title, artist);
+    } 
+    else if (choice == 2) {
+        string host, topic;
+        cout << "Введіть ведучого: ";
+        getline(cin, host);
+        cout << "Введіть тему: ";
+        getline(cin, topic);
+        audio = new Podcast(host, topic);
+    } 
+    else if (choice == 3) {
+        string bookTitle, author, voice;
+        cout << "Назва книги: ";
+        getline(cin, bookTitle);
+        cout << "Автор: ";
+        getline(cin, author);
+        cout << "Читає: ";
+        getline(cin, voice);
+        audio = new Audiobook(bookTitle, author, voice);
+    } 
+    else {
+        cout << "Невірний вибір!" << endl;
+        return 0;
+    }
+
+    cout << endl;
+    audio->Play();
+
+    delete audio; // очищення пам’яті
+    return 0;
+}
