@@ -1,0 +1,95 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+using namespace std;
+
+class Shape {
+public:
+    virtual void Show() = 0;
+    virtual void Save(ofstream &f) = 0;
+    virtual void Load(ifstream &f) = 0;
+    virtual ~Shape() {}
+};
+
+class Square : public Shape {
+    double side;
+public:
+    Square(double s = 0) : side(s) {}
+    void Show() override {
+        cout << "Square, side = " << side << endl;
+    }
+    void Save(ofstream &f) override {
+        f << "Square " << side << endl;
+    }
+    void Load(ifstream &f) override {
+        f >> side;
+    }
+};
+
+class Rectangle : public Shape {
+    double a, b;
+public:
+    Rectangle(double x = 0, double y = 0) : a(x), b(y) {}
+    void Show() override {
+        cout << "Rectangle, sides = " << a << ", " << b << endl;
+    }
+    void Save(ofstream &f) override {
+        f << "Rectangle " << a << " " << b << endl;
+    }
+    void Load(ifstream &f) override {
+        f >> a >> b;
+    }
+};
+
+class Circle : public Shape {
+    double r;
+public:
+    Circle(double rad = 0) : r(rad) {}
+    void Show() override {
+        cout << "Circle, radius = " << r << endl;
+    }
+    void Save(ofstream &f) override {
+        f << "Circle " << r << endl;
+    }
+    void Load(ifstream &f) override {
+        f >> r;
+    }
+};
+
+int main() {
+    vector<Shape*> shapes;
+
+    shapes.push_back(new Square(5));
+    shapes.push_back(new Rectangle(3, 7));
+    shapes.push_back(new Circle(4));
+
+    ofstream out("shapes.txt");
+    for (auto s : shapes)
+        s->Save(out);
+    out.close();
+
+    for (auto s : shapes) delete s;
+    shapes.clear();
+
+    ifstream in("shapes.txt");
+    string type;
+    while (in >> type) {
+        Shape* s = nullptr;
+        if (type == "Square") s = new Square();
+        else if (type == "Rectangle") s = new Rectangle();
+        else if (type == "Circle") s = new Circle();
+        if (s) {
+            s->Load(in);
+            shapes.push_back(s);
+        }
+    }
+    in.close();
+
+    // Виводимо всі фігури
+    for (auto s : shapes) {
+        s->Show();
+        delete s;
+    }
+
+    return 0;
+}
