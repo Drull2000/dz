@@ -1,0 +1,33 @@
+#include <iostream>
+#include <typeinfo>
+using namespace std;
+
+template <typename T>
+void PrintTypeName(const T& value) {
+    cout << "Тип змінної: " << typeid(value).name() << endl;
+}
+
+void PrintCharFromInt(int number) {
+    char* ch = reinterpret_cast<char*>(&number); // трактуємо адресу int як адресу char
+    cout << "Символ, що відповідає числу " << number << ": " << *ch << endl;
+}
+
+int main() {
+    cout << "=== Завдання 1 ===" << endl;
+    int a = 42;
+    double b = 3.14;
+    string s = "Hello";
+
+    PrintTypeName(a);
+    PrintTypeName(b);
+    PrintTypeName(s);
+
+    cout << "\n=== Завдання 2 ===" << endl;
+    int num;
+    cout << "Введіть ціле число (наприклад 65 для 'A'): ";
+    cin >> num;
+
+    PrintCharFromInt(num);
+
+    return 0;
+}
