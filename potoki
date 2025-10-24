@@ -1,0 +1,98 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <ctime>
+#include <string>
+using namespace std;
+
+class FileManager {
+    string filename;
+public:
+    FileManager(string name) : filename(name) {}
+
+    void SaveResult(int attempts, int secretNumber) {
+        ofstream file(filename, ios::app);
+        if (file.is_open()) {
+            file << "Число: " << secretNumber << ", спроб: " << attempts << endl;
+            file.close();
+        } else {
+            cout << "Помилка відкриття файлу!" << endl;
+        }
+    }
+
+    void ShowStats() {
+        ifstream file(filename);
+        if (file.is_open()) {
+            cout << "\n=== Статистика попередніх ігор ===" << endl;
+            string line;
+            while (getline(file, line))
+                cout << line << endl;
+            file.close();
+        } else {
+            cout << "Файл не знайдено або порожній." << endl;
+        }
+    }
+};
+
+class GuessGame {
+    int secretNumber;
+    int attempts;
+    FileManager fileManager;
+public:
+    GuessGame() : secretNumber(0), attempts(0), fileManager("stats.txt") {
+        srand(time(nullptr)); // ініціалізація генератора випадкових чисел
+    }
+
+    void Play() {
+        secretNumber = rand() % 500 + 1;
+        attempts = 0;
+        int guess = 0;
+
+        cout << "\n=== Гра 'Вгадай число' ===" << endl;
+        cout << "Я загадав число від 1 до 500. Спробуй вгадати!" << endl;
+
+        while (true) {
+            cout << "Ваша спроба: ";
+            cin >> guess;
+            attempts++;
+
+            if (guess == secretNumber) {
+                cout << " Вітаю! Ви вгадали число " << secretNumber 
+                     << " за " << attempts << " спроб." << endl;
+                fileManager.SaveResult(attempts, secretNumber);
+                break;
+            } else if (guess < secretNumber) {
+                cout << "Моє число більше!" << endl;
+            } else {
+                cout << "Моє число менше!" << endl;
+            }
+        }
+    }
+
+    void ShowStatistics() {
+        fileManager.ShowStats();
+    }
+};
+
+int main() {
+    GuessGame game;
+    int choice;
+
+    do {
+        cout << "\n=== МЕНЮ ===" << endl;
+        cout << "1 - Нова гра" << endl;
+        cout << "2 - Показати статистику" << endl;
+        cout << "0 - Вихід" << endl;
+        cout << "> ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: game.Play(); break;
+            case 2: game.ShowStatistics(); break;
+            case 0: cout << "До побачення!" << endl; break;
+            default: cout << "Невірний вибір!" << endl;
+        }
+    } while (choice != 0);
+
+    return 0;
+}
