@@ -1,0 +1,23 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.Write("Введите два числа: ");
+        int a = int.Parse(Console.ReadLine());
+        int b = int.Parse(Console.ReadLine());
+
+        if (a > b)  
+        {
+            int temp = a;
+            a = b;
+            b = temp;
+        }
+
+        Console.Write("Парные числа: ");
+        for (int i = a; i <= b; i++)
+            if (i % 2 == 0)
+                Console.Write(i + " ");
+    }
+}
