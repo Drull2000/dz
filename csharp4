@@ -1,0 +1,85 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Задание 1: Введите арифметическое выражение (+ и -):");
+        string expr = Console.ReadLine();
+
+        int result = 0;
+        int currentNumber = 0;
+        char lastOp = '+'; 
+
+        foreach (char c in expr + "+") 
+        {
+            if (char.IsDigit(c))
+            {
+                currentNumber = currentNumber * 10 + (c - '0');
+            }
+            else if (c == '+' || c == '-')
+            {
+                if (lastOp == '+') result += currentNumber;
+                else result -= currentNumber;
+
+                currentNumber = 0;
+                lastOp = c;
+            }
+        }
+
+        Console.WriteLine("Результат выражения: " + result);
+        Console.WriteLine();
+
+
+        Console.WriteLine("Задание 2: Введите строку для шифрования:");
+        string text = Console.ReadLine();
+
+        Console.Write("Введите ключ сдвига (число): ");
+        int shift = int.Parse(Console.ReadLine());
+
+        string encrypted = "";
+
+        foreach (char ch in text)
+        {
+            if (char.IsLetter(ch))
+            {
+                char baseChar = char.IsUpper(ch) ? 'A' : 'a';
+                char newChar = (char)(baseChar + (ch - baseChar + shift) % 26);
+                encrypted += newChar;
+            }
+            else
+            {
+                encrypted += ch; 
+            }
+        }
+
+        Console.WriteLine("Зашифрованная строка: " + encrypted);
+        Console.WriteLine();
+
+
+        Console.WriteLine("Задание 3: Введите текст:");
+        string fullText = Console.ReadLine();
+
+        Console.Write("Введите неприемлемое слово: ");
+        string bad = Console.ReadLine();
+
+        string replacement = new string('*', bad.Length);
+
+        int count = 0;
+        string resultText = fullText;
+
+        int index = resultText.IndexOf(bad, StringComparison.OrdinalIgnoreCase);
+        while (index != -1)
+        {
+            resultText = resultText.Remove(index, bad.Length)
+                                   .Insert(index, replacement);
+            count++;
+            index = resultText.IndexOf(bad, index + replacement.Length,
+                                       StringComparison.OrdinalIgnoreCase);
+        }
+
+        Console.WriteLine("\nРезультат:");
+        Console.WriteLine(resultText);
+        Console.WriteLine("Статистика: " + count + " замен(ы) слова \"" + bad + "\".");
+    }
+}
