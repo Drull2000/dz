@@ -1,0 +1,133 @@
+using System;
+
+class Website : WebsiteBase
+{
+    private string name;
+    private string url;
+    private string description;
+    private string ip;
+
+    public void Output()
+    {
+        Console.WriteLine("\n--- Інформація про сайт ---");
+        Console.WriteLine($"Назва: {name}");
+        Console.WriteLine($"URL: {url}");
+        Console.WriteLine($"Опис: {description}");
+        Console.WriteLine($"IP: {ip}");
+    }
+
+    // Методи доступу
+    public string GetName() => name;
+    public void SetName(string n) => name = n;
+}
+
+
+class Journal
+{
+    private string title;
+    private int year;
+    private string description;
+    private string phone;
+    private string email;
+
+    public void Input()
+    {
+        Console.Write("Назва журналу: ");
+        title = Console.ReadLine();
+
+        Console.Write("Рік заснування: ");
+        year = int.Parse(Console.ReadLine());
+
+        Console.Write("Опис журналу: ");
+        description = Console.ReadLine();
+
+        Console.Write("Контактний телефон: ");
+        phone = Console.ReadLine();
+
+        Console.Write("Email: ");
+        email = Console.ReadLine();
+    }
+
+    public void Output()
+    {
+        Console.WriteLine("\n--- Інформація про журнал ---");
+        Console.WriteLine($"Назва: {title}");
+        Console.WriteLine($"Рік заснування: {year}");
+        Console.WriteLine($"Опис: {description}");
+        Console.WriteLine($"Телефон: {phone}");
+        Console.WriteLine($"Email: {email}");
+    }
+
+    // Методи доступу
+    public string GetTitle() => title;
+    public void SetTitle(string t) => title = t;
+}
+
+
+class Shop
+{
+    private string name;
+    private string address;
+    private string profile;
+    private string phone;
+    private string email;
+
+    public void Input()
+    {
+        Console.Write("Назва магазину: ");
+        name = Console.ReadLine();
+
+        Console.Write("Адреса: ");
+        address = Console.ReadLine();
+
+        Console.Write("Опис профілю магазину: ");
+        profile = Console.ReadLine();
+
+        Console.Write("Телефон: ");
+        phone = Console.ReadLine();
+
+        Console.Write("Email: ");
+        email = Console.ReadLine();
+    }
+
+    public void Output()
+    {
+        Console.WriteLine("\n--- Інформація про магазин ---");
+        Console.WriteLine($"Назва: {name}");
+        Console.WriteLine($"Адреса: {address}");
+        Console.WriteLine($"Профіль: {profile}");
+        Console.WriteLine($"Телефон: {phone}");
+        Console.WriteLine($"Email: {email}");
+    }
+
+    // Методи доступу
+    public string GetName() => name;
+    public void SetName(string n) => name = n;
+}
+
+
+class Program
+{
+    static void Main()
+    {
+        Website site = new Website();
+        Journal journal = new Journal();
+        Shop shop = new Shop();
+
+        Console.WriteLine("=== Введення даних сайту ===");
+        site.Input();
+
+        Console.WriteLine("\n=== Введення даних журналу ===");
+        journal.Input();
+
+        Console.WriteLine("\n=== Введення даних магазину ===");
+        shop.Input();
+
+        Console.WriteLine("\n=== Виведення всіх даних ===");
+        site.Output();
+        journal.Output();
+        shop.Output();
+
+        Console.WriteLine("\nГотово!");
+    }
+}
