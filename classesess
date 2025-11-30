@@ -1,0 +1,161 @@
+using System;
+using System.Collections.Generic;
+class BookList
+{
+    private List<string> books = new List<string>();
+
+    public int Count => books.Count;
+
+    public string this[int index]
+    {
+        get => books[index];
+        set => books[index] = value;
+    }
+
+    public void Add(string book)
+    {
+        if (!books.Contains(book))
+            books.Add(book);
+    }
+
+    public void Remove(string book)
+    {
+        books.Remove(book);
+    }
+
+    public bool Contains(string book) => books.Contains(book);
+
+    public static BookList operator +(BookList list, string book)
+    {
+        list.Add(book);
+        return list;
+    }
+
+    public static BookList operator -(BookList list, string book)
+    {
+        list.Remove(book);
+        return list;
+    }
+
+    public void Print()
+    {
+        Console.WriteLine("\n--- Список книг ---");
+        for (int i = 0; i < books.Count; i++)
+            Console.WriteLine($"{i + 1}. {books[i]}");
+    }
+}
+class Fraction
+{
+    private int numerator;
+    private int denominator;
+
+    public int Numerator
+    {
+        get => numerator;
+        set { numerator = value; }
+    }
+
+    public int Denominator
+    {
+        get => denominator;
+        set
+        {
+            if (value == 0)
+                throw new ArgumentException("Знаменник не може бути нулем!");
+            denominator = value;
+        }
+    }
+
+    public Fraction(int num, int den)
+    {
+        Numerator = num;
+        Denominator = den;
+        Reduce();
+    }
+
+    public void Reduce()
+    {
+        int gcd = GCD(Math.Abs(Numerator), Math.Abs(Denominator));
+        Numerator /= gcd;
+        Denominator /= gcd;
+
+        if (Denominator < 0)
+        {
+            Numerator *= -1;
+            Denominator *= -1;
+        }
+    }
+
+    private int GCD(int a, int b)
+    {
+        while (b != 0)
+        {
+            int temp = a % b;
+            a = b;
+            b = temp;
+        }
+        return a;
+    }
+
+    public static Fraction operator +(Fraction a, Fraction b) =>
+        new Fraction(a.Numerator * b.Denominator + b.Numerator * a.Denominator,
+                     a.Denominator * b.Denominator);
+
+    public static Fraction operator -(Fraction a, Fraction b) =>
+        new Fraction(a.Numerator * b.Denominator - b.Numerator * a.Denominator,
+                     a.Denominator * b.Denominator);
+
+    public static Fraction operator *(Fraction a, Fraction b) =>
+        new Fraction(a.Numerator * b.Numerator,
+                     a.Denominator * b.Denominator);
+
+    public static Fraction operator /(Fraction a, Fraction b)
+    {
+        if (b.Numerator == 0)
+            throw new DivideByZeroException("Ділення на нуль неможливе!");
+
+        return new Fraction(a.Numerator * b.Denominator,
+                            a.Denominator * b.Numerator);
+    }
+
+    public static bool operator ==(Fraction a, Fraction b) =>
+        a.Numerator * b.Denominator == b.Numerator * a.Denominator;
+
+    public static bool operator !=(Fraction a, Fraction b) =>
+        !(a == b);
+
+    public override string ToString() => $"{Numerator}/{Denominator}";
+}
+
+
+
+class Program
+{
+    static void Main()
+    {
+        BookList list = new BookList();
+
+        list += "Майстер і Маргарита";
+        list += "1984";
+        list += "Гаррі Поттер";
+
+        list -= "1984";
+
+        list.Print();
+        Console.WriteLine($"Є 'Гаррі Поттер'? {list.Contains("Гаррі Поттер")}");
+
+
+        Fraction f1 = new Fraction(2, 6);
+        Fraction f2 = new Fraction(3, 9);
+
+        Fraction sum = f1 + f2;
+        Fraction mul = f1 * f2;
+
+        Console.WriteLine("\n--- Робота з дробами ---");
+        Console.WriteLine($"f1 = {f1}");
+        Console.WriteLine($"f2 = {f2}");
+        Console.WriteLine($"f1 + f2 = {sum}");
+        Console.WriteLine($"f1 * f2 = {mul}");
+        Console.WriteLine($"f1 == f2 ? {f1 == f2}");
+    }
+}
