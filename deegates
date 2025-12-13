@@ -1,0 +1,88 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Action showTime = () => Console.WriteLine(DateTime.Now.ToLongTimeString());
+        Action showDate = () => Console.WriteLine(DateTime.Now.ToShortDateString());
+        Action showDay = () => Console.WriteLine(DateTime.Now.DayOfWeek);
+
+        Func<double, double, double> triangleArea = (a, h) => a * h / 2;
+        Func<double, double, double> rectangleArea = (a, b) => a * b;
+
+        Predicate<double> positive = x => x > 0;
+
+        showTime();
+        showDate();
+        showDay();
+
+        if (positive(10))
+            Console.WriteLine("Площа трикутника: " + triangleArea(10, 5));
+
+        if (positive(4))
+            Console.WriteLine("Площа прямокутника: " + rectangleArea(4, 6));
+
+        CreditCard card = new CreditCard("1234 5678", "Іван Іванов", "12/27", 1234, 5000, 2000);
+
+        card.BalanceAdded += msg => Console.WriteLine(msg);
+        card.MoneySpent += msg => Console.WriteLine(msg);
+        card.CreditStarted += msg => Console.WriteLine(msg);
+        card.LimitReached += msg => Console.WriteLine(msg);
+        card.PinChanged += msg => Console.WriteLine(msg);
+
+        card.AddMoney(1000);
+        card.SpendMoney(3500);
+        card.ChangePin(4321);
+    }
+}
+
+class CreditCard
+{
+    public string Number { get; }
+    public string Owner { get; }
+    public string Expiry { get; }
+    public int Pin { get; private set; }
+    public double CreditLimit { get; }
+    public double Balance { get; private set; }
+
+    public event Action<string> BalanceAdded;
+    public event Action<string> MoneySpent;
+    public event Action<string> CreditStarted;
+    public event Action<string> LimitReached;
+    public event Action<string> PinChanged;
+
+    public CreditCard(string number, string owner, string expiry, int pin, double limit, double balance)
+    {
+        Number = number;
+        Owner = owner;
+        Expiry = expiry;
+        Pin = pin;
+        CreditLimit = limit;
+        Balance = balance;
+    }
+
+    public void AddMoney(double sum)
+    {
+        Balance += sum;
+        BalanceAdded?.Invoke("Рахунок поповнено на " + sum);
+    }
+
+    public void SpendMoney(double sum)
+    {
+        Balance -= sum;
+        MoneySpent?.Invoke("Витрачено " + sum);
+
+        if (Balance < 0)
+            CreditStarted?.Invoke("Почато використання кредитних коштів");
+
+        if (Math.Abs(Balance) >= CreditLimit)
+            LimitReached?.Invoke("Досягнуто кредитного ліміту");
+    }
+
+    public void ChangePin(int newPin)
+    {
+        Pin = newPin;
+        PinChanged?.Invoke("PIN змінено");
+    }
+}
