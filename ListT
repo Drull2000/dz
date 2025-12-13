@@ -1,0 +1,41 @@
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static void Main()
+    {
+        List<int> numbers1 = new List<int> { 5, 2, 9, 1, 6 };
+        List<string> words1 = new List<string> { "apple", "banana", "cherry", "date", "fig" };
+        List<int> numbers2 = new List<int> { 4, 1, 7, 9, 3, 8 };
+        List<string> words2 = new List<string> { "apple", "banana", "cherry", "date" };
+
+        Console.WriteLine("Медіана чисел (непарна): " + FindMedian(numbers1));
+        Console.WriteLine("Медіана рядків (непарна): " + FindMedian(words1));
+        Console.WriteLine("Медіана чисел (парна): " + FindMedian(numbers2));
+        Console.WriteLine("Медіана рядків (парна): " + FindMedian(words2));
+    }
+
+    static T FindMedian<T>(ICollection<T> collection) where T : IComparable<T>
+    {
+        if (collection.Count == 0)
+            throw new Exception("Колекція порожня");
+
+        List<T> list = new List<T>(collection);
+        list.Sort();
+
+        int mid = list.Count / 2;
+
+        if (list.Count % 2 != 0)
+            return list[mid];
+
+        if (typeof(T) == typeof(int) || typeof(T) == typeof(double))
+        {
+            dynamic a = list[mid - 1];
+            dynamic b = list[mid];
+            return (T)((a + b) / 2);
+        }
+
+        return list[mid - 1];
+    }
+}
