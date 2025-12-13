@@ -1,0 +1,82 @@
+using System;
+
+class Book : IDisposable
+{
+    public string Title { get; set; }
+    public string Author { get; set; }
+    public int Year { get; set; }
+    public int Pages { get; set; }
+
+    public Book(string title, string author, int year, int pages)
+    {
+        Title = title;
+        Author = author;
+        Year = year;
+        Pages = pages;
+        Console.WriteLine("Книгу створено");
+    }
+
+    public void ShowInfo()
+    {
+        Console.WriteLine($"{Title}, {Author}, {Year}, {Pages} сторінок");
+    }
+
+    public void Dispose()
+    {
+        Console.WriteLine("Dispose книги викликано");
+    }
+
+    ~Book()
+    {
+        Console.WriteLine("Фіналізатор книги викликано");
+    }
+}
+
+class Library : IDisposable
+{
+    private Book[] books = new Book[10];
+    private int count = 0;
+
+    public void AddBook(Book book)
+    {
+        books[count] = book;
+        count++;
+    }
+
+    public void ShowBooks()
+    {
+        for (int i = 0; i < count; i++)
+            books[i].ShowInfo();
+    }
+
+    public void Dispose()
+    {
+        Console.WriteLine("Dispose бібліотеки викликано");
+        books = null;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        using (Library library = new Library())
+        {
+            Book b1 = new Book("Кобзар", "Тарас Шевченко", 1840, 300);
+            Book b2 = new Book("Лісова пісня", "Леся Українка", 1911, 200);
+
+            library.AddBook(b1);
+            library.AddBook(b2);
+
+            library.ShowBooks();
+
+            b1.Dispose();
+            b2.Dispose();
+        }
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
+        Console.WriteLine("Кінець програми");
+    }
+}
