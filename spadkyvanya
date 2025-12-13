@@ -1,0 +1,153 @@
+ using System;
+
+class MusicalInstrument
+{
+    protected string Name;
+    protected string Description;
+    protected string HistoryText;
+
+    public MusicalInstrument(string name, string description, string history)
+    {
+        Name = name;
+        Description = description;
+        HistoryText = history;
+    }
+
+    public virtual void Sound()
+    {
+        Console.WriteLine("Інструмент видає звук");
+    }
+
+    public void Show()
+    {
+        Console.WriteLine(Name);
+    }
+
+    public void Desc()
+    {
+        Console.WriteLine(Description);
+    }
+
+    public void History()
+    {
+        Console.WriteLine(HistoryText);
+    }
+}
+
+class Violin : MusicalInstrument
+{
+    public Violin() : base(
+        "Скрипка",
+        "Струнний смичковий музичний інструмент",
+        "Скрипка з'явилась у XVI столітті в Італії")
+    { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Скрипка звучить ніжно");
+    }
+}
+
+class Trombone : MusicalInstrument
+{
+    public Trombone() : base(
+        "Тромбон",
+        "Мідний духовий музичний інструмент",
+        "Тромбон відомий з XV століття")
+    { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Тромбон звучить гучно");
+    }
+}
+
+class Ukulele : MusicalInstrument
+{
+    public Ukulele() : base(
+        "Укулеле",
+        "Малий струнний щипковий інструмент",
+        "Укулеле з'явилось на Гаваях у XIX столітті")
+    { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Укулеле звучить дзвінко");
+    }
+}
+
+class Cello : MusicalInstrument
+{
+    public Cello() : base(
+        "Віолончель",
+        "Великий струнний смичковий інструмент",
+        "Віолончель виникла у XVI столітті")
+    { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Віолончель звучить глибоко");
+    }
+}
+
+class Course
+{
+    public string Name { get; set; }
+    public int Duration { get; set; }
+
+    public Course(string name, int duration)
+    {
+        Name = name;
+        Duration = duration;
+    }
+
+    public override string ToString()
+    {
+        return $"Курс: {Name}, Тривалість: {Duration} годин";
+    }
+}
+
+class OnlineCourse : Course
+{
+    public string Platform { get; set; }
+
+    public OnlineCourse(string name, int duration, string platform)
+        : base(name, duration)
+    {
+        Platform = platform;
+    }
+
+    public override string ToString()
+    {
+        return $"Курс: {Name}, Тривалість: {Duration} годин, Платформа: {Platform}";
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        MusicalInstrument[] instruments =
+        {
+            new Violin(),
+            new Trombone(),
+            new Ukulele(),
+            new Cello()
+        };
+
+        foreach (var instrument in instruments)
+        {
+            instrument.Show();
+            instrument.Sound();
+            instrument.Desc();
+            instrument.History();
+            Console.WriteLine();
+        }
+
+        Course course = new Course("C# Basics", 40);
+        OnlineCourse onlineCourse = new OnlineCourse("C# Online", 60, "Udemy");
+
+        Console.WriteLine(course);
+        Console.WriteLine(onlineCourse);
+    }
+}
