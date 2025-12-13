@@ -1,0 +1,182 @@
+using System;
+
+class BankruptException : ApplicationException
+{
+    public BankruptException() : base("Банкрут") { }
+}
+
+class Money
+{
+    private int totalKop;
+
+    public Money(int grn, int kop)
+    {
+        totalKop = grn * 100 + kop;
+        if (totalKop < 0)
+            throw new BankruptException();
+    }
+
+    private Money(int kop)
+    {
+        totalKop = kop;
+        if (totalKop < 0)
+            throw new BankruptException();
+    }
+
+    public int Grn => totalKop / 100;
+    public int Kop => totalKop % 100;
+
+    public static Money operator +(Money a, Money b)
+    {
+        return new Money(a.totalKop + b.totalKop);
+    }
+
+    public static Money operator -(Money a, Money b)
+    {
+        return new Money(a.totalKop - b.totalKop);
+    }
+
+    public static Money operator *(Money a, int n)
+    {
+        return new Money(a.totalKop * n);
+    }
+
+    public static Money operator /(Money a, int n)
+    {
+        if (n == 0)
+            throw new DivideByZeroException();
+        return new Money(a.totalKop / n);
+    }
+
+    public static Money operator ++(Money a)
+    {
+        return new Money(a.totalKop + 1);
+    }
+
+    public static Money operator --(Money a)
+    {
+        return new Money(a.totalKop - 1);
+    }
+
+    public static bool operator <(Money a, Money b)
+    {
+        return a.totalKop < b.totalKop;
+    }
+
+    public static bool operator >(Money a, Money b)
+    {
+        return a.totalKop > b.totalKop;
+    }
+
+    public static bool operator ==(Money a, Money b)
+    {
+        return a.totalKop == b.totalKop;
+    }
+
+    public static bool operator !=(Money a, Money b)
+    {
+        return a.totalKop != b.totalKop;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Money m)
+            return totalKop == m.totalKop;
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return totalKop.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return $"{Grn} грн {Kop} коп";
+    }
+}
+
+class Program
+{
+    static Money ReadMoney()
+    {
+        Console.Write("Гривны: ");
+        int g = int.Parse(Console.ReadLine());
+        Console.Write("Копейки: ");
+        int k = int.Parse(Console.ReadLine());
+        return new Money(g, k);
+    }
+
+    static void Main()
+    {
+        try
+        {
+            Console.WriteLine("Введите першу суму");
+            Money a = ReadMoney();
+
+            Console.WriteLine("Введите другу суму");
+            Money b = ReadMoney();
+
+            while (true)
+            {
+                Console.WriteLine("\n1 +\n2 -\n3 *\n4 /\n5 ++\n6 --\n7 <\n8 >\n9 ==\n0 Вихід");
+                Console.Write("Ваш выбор: ");
+                int c = int.Parse(Console.ReadLine());
+
+                try
+                {
+                    if (c == 0) break;
+
+                    switch (c)
+                    {
+                        case 1:
+                            Console.WriteLine(a + b);
+                            break;
+                        case 2:
+                            Console.WriteLine(a - b);
+                            break;
+                        case 3:
+                            Console.Write("Число: ");
+                            int m = int.Parse(Console.ReadLine());
+                            Console.WriteLine(a * m);
+                            break;
+                        case 4:
+                            Console.Write("Число: ");
+                            int d = int.Parse(Console.ReadLine());
+                            Console.WriteLine(a / d);
+                            break;
+                        case 5:
+                            a++;
+                            Console.WriteLine(a);
+                            break;
+                        case 6:
+                            a--;
+                            Console.WriteLine(a);
+                            break;
+                        case 7:
+                            Console.WriteLine(a < b);
+                            break;
+                        case 8:
+                            Console.WriteLine(a > b);
+                            break;
+                        case 9:
+                            Console.WriteLine(a == b);
+                            break;
+                    }
+                }
+                catch (BankruptException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Помилка");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+}
