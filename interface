@@ -1,0 +1,103 @@
+using System;
+
+interface IRemoteControl
+{
+    void TurnOn();
+    void TurnOff();
+    void SetChannel(int channel);
+}
+
+class TvRemoteControl : IRemoteControl
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("Телевізор увімкнено");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("Телевізор вимкнено");
+    }
+
+    public void SetChannel(int channel)
+    {
+        Console.WriteLine("Телевізор: канал " + channel);
+    }
+}
+
+class RadioRemoteControl : IRemoteControl
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("Радіо увімкнено");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("Радіо вимкнено");
+    }
+
+    public void SetChannel(int channel)
+    {
+        Console.WriteLine("Радіо: хвиля " + channel);
+    }
+}
+
+interface IValidator
+{
+    bool Validate();
+}
+
+class EmailValidator : IValidator
+{
+    private string email;
+
+    public EmailValidator(string email)
+    {
+        this.email = email;
+    }
+
+    public bool Validate()
+    {
+        return email.Contains("@") && email.Contains(".");
+    }
+}
+
+class PasswordValidator : IValidator
+{
+    private string password;
+
+    public PasswordValidator(string password)
+    {
+        this.password = password;
+    }
+
+    public bool Validate()
+    {
+        return password.Length >= 6;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        IRemoteControl tv = new TvRemoteControl();
+        tv.TurnOn();
+        tv.SetChannel(5);
+        tv.TurnOff();
+
+        IRemoteControl radio = new RadioRemoteControl();
+        radio.TurnOn();
+        radio.SetChannel(101);
+        radio.TurnOff();
+
+        Console.Write("Введіть email: ");
+        EmailValidator email = new EmailValidator(Console.ReadLine());
+        Console.WriteLine(email.Validate());
+
+        Console.Write("Введіть пароль: ");
+        PasswordValidator password = new PasswordValidator(Console.ReadLine());
+        Console.WriteLine(password.Validate());
+    }
+}
