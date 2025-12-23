@@ -1,0 +1,209 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace ConsoleApp
+{
+    class Program
+    {
+        static void Main()
+        {
+            PoemManager manager = new PoemManager();
+
+            // === ДОДАЄМО ВІРШ ===
+            manager.Add(new Poem
+            {
+                Title = "Заповіт",
+                Author = "Тарас Шевченко",
+                Year = 1845,
+                Theme = "Патріотизм",
+                Text = "Як умру, то поховайте мене на могилі..."
+            });
+
+            // === ЗБЕРЕЖЕННЯ / ЗАВАНТАЖЕННЯ ===
+            manager.Save("poems.txt");
+            manager.Load("poems.txt");
+
+            // === ЗВІТ ЗА АВТОРОМ ===
+            var poemsByAuthor = manager.FindByAuthor("Шевченко");
+            Console.WriteLine("Вірші Шевченка:");
+            foreach (var p in poemsByAuthor)
+                Console.WriteLine(p.Title);
+
+            // === ЗАВДАННЯ 2: ПОШУК ФАЙЛІВ ===
+            FindFiles(@"D:\DataForUser", "*.txt");
+
+            // === ЗАВДАННЯ 3: ВИДАЛЕННЯ ФАЙЛІВ ===
+            // DeleteFiles(@"D:\DataForUser", "*.txt");
+
+            // === ЗАВДАННЯ 8: ФОРМА ОЦІНКИ РЕСТОРАНУ ===
+            RestaurantReview review = new RestaurantReview();
+
+            Console.Write("Нік: ");
+            review.Nick = Console.ReadLine();
+
+            Console.Write("Email: ");
+            review.Email = Console.ReadLine();
+            if (!Validate(review.Email, @"^[\w\.-]+@[\w-]+\.\w+$"))
+            {
+                Console.WriteLine("Помилка email");
+                return;
+            }
+
+            Console.Write("Телефон: ");
+            review.Phone = Console.ReadLine();
+
+            Console.Write("Назва ресторану: ");
+            review.Restaurant = Console.ReadLine();
+            if (!Validate(review.Restaurant, @"^[^%&()]+$"))
+            {
+                Console.WriteLine("Недопустима назва ресторану");
+                return;
+            }
+
+            Console.Write("Адреса ресторану: ");
+            review.Address = Console.ReadLine();
+            if (!Validate(review.Address, @"^[A-Za-z0-9\s]+$"))
+            {
+                Console.WriteLine("Невірна адреса");
+                return;
+            }
+
+            Console.Write("Кухня: ");
+            review.Cuisine = Console.ReadLine();
+            if (!Validate(review.Cuisine, @"^[A-Za-z]+$"))
+            {
+                Console.WriteLine("Невірна кухня");
+                return;
+            }
+
+            Console.Write("Телефон ресторану: ");
+            review.RestaurantPhone = Console.ReadLine();
+
+            Console.Write("Оцінка (1-12): ");
+            review.Rating = Console.ReadLine();
+            if (!Validate(review.Rating, @"^(1[0-2]|[1-9])$"))
+            {
+                Console.WriteLine("Невірна оцінка");
+                return;
+            }
+
+            Console.Write("Відгук: ");
+            review.Review = Console.ReadLine();
+
+            SaveReview(review);
+            Console.WriteLine("Відгук збережено!");
+        }
+
+        // ======= ЗАВДАННЯ 2 =======
+        static void FindFiles(string path, string mask)
+        {
+            if (!Directory.Exists(path)) return;
+
+            var files = Directory.GetFiles(path, mask, SearchOption.AllDirectories);
+            foreach (var file in files)
+                Console.WriteLine(file);
+        }
+
+        // ======= ЗАВДАННЯ 3 =======
+        static void DeleteFiles(string path, string mask)
+        {
+            var files = Directory.GetFiles(path, mask, SearchOption.AllDirectories);
+            foreach (var file in files)
+                File.Delete(file);
+
+            var dirs = Directory.GetDirectories(path, "*", SearchOption.AllDirectories)
+                                 .OrderByDescending(d => d.Length);
+
+            foreach (var dir in dirs)
+                if (!Directory.EnumerateFileSystemEntries(dir).Any())
+                    Directory.Delete(dir);
+        }
+
+        static bool Validate(string value, string pattern)
+        {
+            return Regex.IsMatch(value, pattern);
+        }
+
+        static void SaveReview(RestaurantReview r)
+        {
+            string line = $"{r.Nick}|{r.Email}|{r.Phone}|{r.Restaurant}|{r.Address}|{r.Cuisine}|{r.RestaurantPhone}|{r.Rating}|{r.Review}";
+            File.AppendAllText("reviews.txt", line + Environment.NewLine);
+        }
+    }
+
+    // ================= ВІРШІ =================
+    class Poem
+    {
+        public string Title;
+        public string Author;
+        public int Year;
+        public string Text;
+        public string Theme;
+
+        public int Length => Text.Length;
+
+        public override string ToString()
+        {
+            return $"{Title}|{Author}|{Year}|{Theme}|{Text}";
+        }
+
+        public static Poem FromString(string line)
+        {
+            var p = line.Split('|');
+            return new Poem
+            {
+                Title = p[0],
+                Author = p[1],
+                Year = int.Parse(p[2]),
+                Theme = p[3],
+                Text = p[4]
+            };
+        }
+    }
+
+    class PoemManager
+    {
+        private List<Poem> poems = new List<Poem>();
+
+        public void Add(Poem poem) => poems.Add(poem);
+        public void Remove(string title) => poems.RemoveAll(p => p.Title == title);
+
+        public List<Poem> FindByAuthor(string author)
+            => poems.Where(p => p.Author.Contains(author)).ToList();
+
+        public List<Poem> FindByTheme(string theme)
+            => poems.Where(p => p.Theme == theme).ToList();
+
+        public List<Poem> FindByYear(int year)
+            => poems.Where(p => p.Year == year).ToList();
+
+        public List<Poem> FindByWord(string word)
+            => poems.Where(p => p.Text.Contains(word)).ToList();
+
+        public List<Poem> FindByLength(int min)
+            => poems.Where(p => p.Length >= min).ToList();
+
+        public void Save(string path)
+            => File.WriteAllLines(path, poems.Select(p => p.ToString()));
+
+        public void Load(string path)
+            => poems = File.ReadAllLines(path).Select(Poem.FromString).ToList();
+    }
+
+    // ================= РЕСТОРАН =================
+    class RestaurantReview
+    {
+        public string Nick;
+        public string Email;
+        public string Phone;
+        public string Restaurant;
+        public string Address;
+        public string Cuisine;
+        public string RestaurantPhone;
+        public string Rating;
+        public string Review;
+    }
+}
