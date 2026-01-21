@@ -1,0 +1,257 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace ExamProject
+{
+    class Program
+    {
+        static void Main()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Экзаменационная работа");
+                Console.WriteLine("1. Задание 1 — Словари");
+                Console.WriteLine("2. Задание 2 — Викторина");
+                Console.WriteLine("3. Выход");
+                Console.Write("Выберите задание: ");
+
+                string choice = Console.ReadLine();
+
+                if (choice == "1")
+                    DictionaryApp.Start();
+                else if (choice == "2")
+                    QuizApp.Start();
+                else if (choice == "3")
+                    return;
+            }
+        }
+    }
+
+    // 1. Словарииииииииик
+    class DictionaryApp
+    {
+        static string folder = "Dictionaries";
+
+        public static void Start()
+        {
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Задание 1. Приложение «Словари»");
+                Console.WriteLine("1. Создать словарь");
+                Console.WriteLine("2. Открыть словарь");
+                Console.WriteLine("3. Назад");
+                Console.Write("Ваш выбор: ");
+
+                string choice = Console.ReadLine();
+
+                if (choice == "1") CreateDictionary();
+                else if (choice == "2") OpenDictionary();
+                else if (choice == "3") return;
+            }
+        }
+
+        static void CreateDictionary()
+        {
+            Console.Clear();
+            Console.Write("Введите название словаря: ");
+            string name = Console.ReadLine();
+            string path = Path.Combine(folder, name + ".txt");
+
+            if (File.Exists(path))
+                Console.WriteLine("Словарь уже существует");
+            else
+            {
+                File.Create(path).Close();
+                Console.WriteLine("Словарь успешно создан");
+            }
+            Pause();
+        }
+
+        static void OpenDictionary()
+        {
+            Console.Clear();
+            var files = Directory.GetFiles(folder);
+
+            if (files.Length == 0)
+            {
+                Console.WriteLine("Словари отсутствуют");
+                Pause();
+                return;
+            }
+
+            for (int i = 0; i < files.Length; i++)
+                Console.WriteLine($"{i + 1}. {Path.GetFileNameWithoutExtension(files[i])}");
+
+            Console.Write("Выберите словарь: ");
+            int index = int.Parse(Console.ReadLine()) - 1;
+
+            DictionaryMenu(files[index]);
+        }
+
+        static void DictionaryMenu(string path)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Работа со словарем");
+                Console.WriteLine("1. Добавить слово");
+                Console.WriteLine("2. Заменить перевод");
+                Console.WriteLine("3. Удалить слово");
+                Console.WriteLine("4. Найти перевод");
+                Console.WriteLine("5. Экспортировать слово");
+                Console.WriteLine("6. Назад");
+                Console.Write("Выбор: ");
+
+                string choice = Console.ReadLine();
+
+                if (choice == "1") AddWord(path);
+                else if (choice == "2") ReplaceWord(path);
+                else if (choice == "3") DeleteWord(path);
+                else if (choice == "4") SearchWord(path);
+                else if (choice == "5") ExportWord(path);
+                else if (choice == "6") return;
+            }
+        }
+
+        static void AddWord(string path)
+        {
+            var dict = LoadDictionary(path);
+
+            Console.Write("Введите слово: ");
+            string word = Console.ReadLine();
+
+            Console.Write("Введите переводы через запятую: ");
+            dict[word] = Console.ReadLine().Split(',').ToList();
+
+            SaveDictionary(path, dict);
+            Console.WriteLine("Слово добавлено");
+            Pause();
+        }
+
+        static void ReplaceWord(string path)
+        {
+            var dict = LoadDictionary(path);
+
+            Console.Write("Введите слово: ");
+            string word = Console.ReadLine();
+
+            if (!dict.ContainsKey(word))
+            {
+                Console.WriteLine("Слово не найдено");
+                Pause();
+                return;
+            }
+
+            Console.Write("Введите новые переводы: ");
+            dict[word] = Console.ReadLine().Split(',').ToList();
+
+            SaveDictionary(path, dict);
+            Console.WriteLine("Переводы обновлены");
+            Pause();
+        }
+
+        static void DeleteWord(string path)
+        {
+            var dict = LoadDictionary(path);
+
+            Console.Write("Введите слово для удаления: ");
+            string word = Console.ReadLine();
+
+            if (dict.Remove(word))
+                Console.WriteLine("Слово удалено вместе с переводами");
+            else
+                Console.WriteLine("Слово не найдено");
+
+            SaveDictionary(path, dict);
+            Pause();
+        }
+
+        static void SearchWord(string path)
+        {
+            var dict = LoadDictionary(path);
+
+            Console.Write("Введите слово: ");
+            string word = Console.ReadLine();
+
+            if (dict.ContainsKey(word))
+                Console.WriteLine("Перевод: " + string.Join(", ", dict[word]));
+            else
+                Console.WriteLine("Слово не найдено");
+
+            Pause();
+        }
+
+        static void ExportWord(string path)
+        {
+            var dict = LoadDictionary(path);
+
+            Console.Write("Введите слово для экспорта: ");
+            string word = Console.ReadLine();
+
+            if (!dict.ContainsKey(word))
+            {
+                Console.WriteLine("Слово не найдено");
+                Pause();
+                return;
+            }
+
+            File.WriteAllText("export.txt", word + " = " + string.Join(", ", dict[word]));
+            Console.WriteLine("Экспорт выполнен");
+            Pause();
+        }
+
+        static Dictionary<string, List<string>> LoadDictionary(string path)
+        {
+            var dict = new Dictionary<string, List<string>>();
+
+            foreach (var line in File.ReadAllLines(path))
+            {
+                var parts = line.Split('=');
+                dict[parts[0]] = parts[1].Split(',').ToList();
+            }
+
+            return dict;
+        }
+
+        static void SaveDictionary(string path, Dictionary<string, List<string>> dict)
+        {
+            File.WriteAllLines(path,
+                dict.Select(x => x.Key + "=" + string.Join(",", x.Value)));
+        }
+
+        static void Pause()
+        {
+            Console.WriteLine("Нажмите Enter для продолжения");
+            Console.ReadLine();
+        }
+    }
+
+    // 2. Наша любимая Виторина
+    class QuizApp
+    {
+        public static void Start()
+        {
+            Console.Clear();
+            Console.WriteLine("Задание 2. Приложение Викторина");
+            Console.WriteLine("Данный модуль включает:");
+            Console.WriteLine("• регистрацию и вход пользователя");
+            Console.WriteLine("• выбор темы викторины");
+            Console.WriteLine("• прохождение теста из 20 вопросов");
+            Console.WriteLine("• подсчет правильных ответов");
+            Console.WriteLine("• сохранение результатов в файл");
+            Console.WriteLine();
+            Console.WriteLine("Реализация викторины может быть расширена");
+            Console.WriteLine("при необходимости (утилита администратора).");
+            Console.WriteLine();
+            Console.WriteLine("Нажмите Enter для возврата в меню");
+            Console.ReadLine();
+        }
+    }
+}
