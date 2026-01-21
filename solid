@@ -1,0 +1,125 @@
+using System;
+
+namespace ExamPatterns
+{
+    class Program
+    {
+        static void Main()
+        {
+            // Проверка Задания 1
+            ShapeFactory circleFactory = new CircleFactory();
+            IShape circle = circleFactory.CreateShape();
+            circle.Draw();
+
+            ShapeFactory rectangleFactory = new RectangleFactory();
+            IShape rectangle = rectangleFactory.CreateShape();
+            rectangle.Draw();
+
+            Console.WriteLine();
+
+            // Проверка Задания 2
+            GeoLocation geoLocation = new GeoLocation();
+            ICoordinatesService coordinatesService = new GeoLocationAdapter(geoLocation);
+
+            var coordinates = coordinatesService.GetCoordinates();
+            Console.WriteLine($"Latitude: {coordinates.Latitude}, Longitude: {coordinates.Longitude}");
+        }
+    }
+
+    // 1. паттерны
+
+    // Интерфейс фигуры
+    interface IShape
+    {
+        void Draw();
+    }
+
+    // Класс Circle
+    class Circle : IShape
+    {
+        public void Draw()
+        {
+            Console.WriteLine("Drawing a circle");
+        }
+    }
+
+    // Класс Rectangle
+    class Rectangle : IShape
+    {
+        public void Draw()
+        {
+            Console.WriteLine("Drawing a rectangle");
+        }
+    }
+
+    // Абстрактная фабрика
+    abstract class ShapeFactory
+    {
+        public abstract IShape CreateShape();
+    }
+
+    // Фабрика для круга
+    class CircleFactory : ShapeFactory
+    {
+        public override IShape CreateShape()
+        {
+            return new Circle();
+        }
+    }
+
+    // Фабрика для прямоугольника
+    class RectangleFactory : ShapeFactory
+    {
+        public override IShape CreateShape()
+        {
+            return new Rectangle();
+        }
+    }
+
+    // 2. патерн адаптер
+
+    // Структура координат
+    class Coordinates
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+
+    // Интерфейс сервиса координат
+    interface ICoordinatesService
+    {
+        Coordinates GetCoordinates();
+    }
+
+    // Сторонний класс геолокации (его менять нельзя)
+    class GeoLocation
+    {
+        public string GetLocation()
+        {
+            return "37.7749,-122.4194";
+        }
+    }
+
+    // Адаптер для GeoLocation
+    class GeoLocationAdapter : ICoordinatesService
+    {
+        private GeoLocation _geoLocation;
+
+        public GeoLocationAdapter(GeoLocation geoLocation)
+        {
+            _geoLocation = geoLocation;
+        }
+
+        public Coordinates GetCoordinates()
+        {
+            string location = _geoLocation.GetLocation();
+            string[] parts = location.Split(',');
+
+            return new Coordinates
+            {
+                Latitude = double.Parse(parts[0]),
+                Longitude = double.Parse(parts[1])
+            };
+        }
+    }
+}
